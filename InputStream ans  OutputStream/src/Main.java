@@ -1,9 +1,12 @@
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardOpenOption;
+import java.util.Objects;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -19,39 +22,49 @@ public class Main {
         contactList.add(contact4);
         contactList.add(contact5);
 
-        try (BufferedWriter writer = new BufferedWriter(new FileWriter("contacts.txt")))
-        {
-            for (Contact strc : contactList){
-                writer.write(strc.toString() + "\n");
-                writer.flush();
-                System.out.println("Data is flushed to the file.");
+
+        Path filePath = Path.of("contacts.txt");
+        if (!(Files.exists(filePath))){
+            try {
+                Files.createFile(filePath);
+                System.out.println("File created successfully: " + filePath.toAbsolutePath());
+            } catch (IOException exception) {
+                System.out.println("Error creating file.");
+                exception.printStackTrace();
             }
-        } catch (Exception e) {
-            e.printStackTrace();
+        }
+        
+        try {
+            System.out.println("Contact created successfully!");
+            Files.write(filePath, contactList.toString().getBytes(), StandardOpenOption.WRITE);
+        } catch (IOException exception) {
+            System.out.println("Error writing contact list.");
+            exception.printStackTrace();
         }
         readAllContacts();
+
     }
-    
     public static List<Contact> readAllContacts() {
-        List<Contact> contactList = new ArrayList<>();
-        try (BufferedReader reader = new BufferedReader(new FileReader("contacts.txt"))) {
-            String lineRead;
-            while ((lineRead = reader.readLine()) != null) {
-                String[] words = lineRead.split(",");
+        List<Contact> contactList = new ArrayList<Contact>();
+        Path filePath = Path.of("contacts.txt");
+
+        try {
+            List<String> string = Files.readAllLines(filePath);
+
+            for (String contact : string) {
+                String[] words = contact.split(",");
                 contactList.add(new Contact(words[0], words[1]));
+                System.out.println("The contacts in the file: "+ contact);
             }
-            System.out.println("Data in the file: ");
-            for (Contact contact : contactList) {
-                System.out.println(contact);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+
+        } catch (IOException exception) {
+            System.out.println("Error with reading contact list.");
+            exception.printStackTrace();
         }
         return contactList;
     }
 }
-
-
+                    
 //В main створити List<Contact > з 5 контактами
 //Записати до файлу список контактів які мають телефон і імя
 //Використовуючи 
