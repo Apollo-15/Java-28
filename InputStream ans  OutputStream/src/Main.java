@@ -8,7 +8,6 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.nio.file.StandardOpenOption;
-import java.util.Objects;
 
 public class Main {
     public static void main(String[] args) throws Exception {
@@ -26,19 +25,22 @@ public class Main {
 
 
         Path filePath = Path.of("contacts.txt");
+
         if (!(Files.exists(filePath))){
             try {
                 Files.createFile(filePath);
-                System.out.println("File created successfully: " + filePath.toAbsolutePath());
+                // System.out.println("File created successfully: " + filePath.toAbsolutePath());
             } catch (IOException exception) {
                 System.out.println("Error creating file.");
                 exception.printStackTrace();
             }
         }
-        
+
         try {
-            System.out.println("Contact created successfully!");
-            Files.write(filePath, contactList.toString().getBytes(), StandardOpenOption.WRITE);
+            // System.out.println("Contact created successfully!");
+            for (Contact contact : contactList) {
+                Files.write(filePath, contact.toString().getBytes(), StandardOpenOption.WRITE);
+            }
         } catch (IOException exception) {
             System.out.println("Error writing contact list.");
             exception.printStackTrace();
@@ -59,6 +61,7 @@ public class Main {
             String result = builder.toString().replaceAll("[\\[\\]]", "");
             String result2 = result.replaceAll("]", "");
             String[] words = result2.toString().split(", "); 
+
             for (String string : words) {
                 String[] nameNumber = string.split(",");
                 contactList.add(new Contact(nameNumber[0], nameNumber[1]));
